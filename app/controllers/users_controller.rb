@@ -2,8 +2,7 @@
 
 # UsersController
 class UsersController < ApplicationController
-
-  skip_before_action :authenticate_request, only: [:create, :login]
+  skip_before_action :authenticate_request, only: %i[create login]
 
   def index
     @users = User.all
@@ -12,7 +11,11 @@ class UsersController < ApplicationController
 
   def show
     @user = User.find(params[:id])
-    render json: @users, status: 200
+    if @user
+      render json: @user, status: :ok
+    else
+      render json: { error: @user.errors.full_messages }, status: :not_found
+    end
   end
 
   def create
@@ -31,7 +34,7 @@ class UsersController < ApplicationController
     if @user&.authenticate(params[:password])
       token = jwt_encode(user_id: @user.id)
       time = Time.now + 24.hours.to_i
-      render json: { token: token, exp: time.strftime('%m-%d-%Y %H:%M'), username: @user.username }, status: 200
+      render json: { token:, exp: time.strftime('%m-%d-%Y %H:%M'), username: @user.username }, status: 200
     else
       render json: { error: 'Invalid username or password' }, status: :unauthorized
     end

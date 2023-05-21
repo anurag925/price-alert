@@ -16,7 +16,7 @@ module JwtToken
 
   # function to decode data from jwt
   def jwt_decode(token)
-    JWT.decode(token, SECRET_KEY)[0]
+    decoded_token = JWT.decode(token, SECRET_KEY)[0]
     HashWithIndifferentAccess.new(decoded_token)
   end
 end
