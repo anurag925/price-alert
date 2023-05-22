@@ -20,6 +20,7 @@ class AlertsController < ApplicationController
     @alert = Alert.new(params.require(:alert).permit(:amount))
     @alert.user = @current_user
     if @alert.save
+      client.del("alerts_#{@current_user.id}")
       render json: @alert, status: :ok
     else
       render json: { error: @alert.errors.full_messages }, status: 503
@@ -36,28 +37,38 @@ class AlertsController < ApplicationController
   end
 
   def user_alert
-    user_alerts
-    filter_alerts_for_status
-    paginated_user_alerts
-    render json: @user_alerts, status: :ok
+    all_user_alerts
+    user_alert_conditions
+    render json: user_alerts, status: :ok
   end
 
   private
 
   def user_alerts
-    @user_alerts ||= @current_user.alerts.all
+    @user_alerts ||= @current_user.alerts
   end
 
-  def filter_alerts_for_status
+  def all_user_alerts
+    return if params[:status] || params[:page]
+
+    alerts = client.get("alerts_#{@current_user.id}")
+    if alerts
+      @user_alerts = alerts
+      return
+    end
+    client.set("alerts_#{@current_user.id}", user_alerts.to_json)
+  end
+
+  def user_alert_conditions
     @user_alerts = user_alerts.where(status: params[:status]) if params[:status]
-  end
-
-  def paginated_user_alerts
-    page_items = 1
-    @user_alerts = user_alerts.offset(page_items * (page_no - 1)).limit(page_items) if page_no
+    @user_alerts = user_alerts.offset(page_no * page_items).limit(page_items) if params[:page]
   end
 
   def page_no
-    int(params[:page])
+    (params[:page] || 1).to_i - 1
+  end
+
+  def page_items
+    100
   end
 end

@@ -3,6 +3,7 @@
 # Base controller for API
 class ApplicationController < ActionController::API
   include JwtToken
+  include Cache
 
   before_action :authenticate_request
 
