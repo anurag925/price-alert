@@ -36,8 +36,10 @@ class AlertsController < ApplicationController
   end
 
   def user_alert
+    user_alerts
     filter_alerts_for_status
-    render json: paginated_user_alerts, status: :ok
+    paginated_user_alerts
+    render json: @user_alerts, status: :ok
   end
 
   private
@@ -47,12 +49,15 @@ class AlertsController < ApplicationController
   end
 
   def filter_alerts_for_status
-    user_alerts = user_alerts.where(status: params[:status]) if params[:status]
-    @user_alerts = user_alerts if user_alerts
+    @user_alerts = user_alerts.where(status: params[:status]) if params[:status]
   end
 
   def paginated_user_alerts
-    user_alerts = user_alerts.offset(100 * params[:page]).limit(params[:page]) if params[:page]
-    @user_alerts = user_alerts if user_alerts
+    page_items = 1
+    @user_alerts = user_alerts.offset(page_items * (page_no - 1)).limit(page_items) if page_no
+  end
+
+  def page_no
+    int(params[:page])
   end
 end

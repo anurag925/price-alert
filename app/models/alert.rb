@@ -13,7 +13,8 @@
 #
 # Indexes
 #
-#  index_alerts_on_user_id  (user_id)
+#  index_alerts_on_status_and_amount  (status,amount)
+#  index_alerts_on_user_id            (user_id)
 #
 class Alert < ApplicationRecord
   belongs_to :user

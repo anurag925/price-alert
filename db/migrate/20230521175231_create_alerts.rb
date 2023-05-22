@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# Migration to create alerts table
 class CreateAlerts < ActiveRecord::Migration[7.0]
   def change
     create_table :alerts do |t|
@@ -9,5 +10,6 @@ class CreateAlerts < ActiveRecord::Migration[7.0]
 
       t.timestamps
     end
+    add_index :alerts, %i[status amount]
   end
 end

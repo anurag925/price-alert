@@ -22,6 +22,7 @@ ActiveRecord::Schema[7.0].define(version: 20_230_521_175_231) do
     t.bigint 'user_id'
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
+    t.index %w[status amount], name: 'index_alerts_on_status_and_amount'
     t.index ['user_id'], name: 'index_alerts_on_user_id'
   end
 
@@ -32,5 +33,6 @@ ActiveRecord::Schema[7.0].define(version: 20_230_521_175_231) do
     t.string 'password_digest'
     t.datetime 'created_at', null: false
     t.datetime 'updated_at', null: false
+    t.index ['email'], name: 'index_users_on_email', unique: true
   end
 end
