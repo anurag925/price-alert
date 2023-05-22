@@ -7,6 +7,7 @@ require "#{Rails.root}/app/workers/binance_data_update_worker.rb"
 namespace :binance_price_fetch do
   task :start do
     Rails.logger = Logger.new(Rails.root.join('log', 'binance_price_fetch.log'))
+    # Rails.logger = Logger.new(STDOUT)
 
     if ENV['BACKGROUND']
       # run in background
@@ -35,7 +36,7 @@ namespace :binance_price_fetch do
         Rails.logger.error "error with binance price fetch #{e.message}"
       end
       loop do
-        ws.send $stdin.gets.strip
+        # ws.send $stdin.gets.strip
       end
       Rails.logger.info 'Starting binance price fetch done'
     rescue StandardError => e
